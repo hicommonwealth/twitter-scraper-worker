@@ -119,7 +119,7 @@ fn should_not_make_twitter_call_without_api_key() {
 		s_info.clear();
 	
 		// when
-    let result = Example::run();
+    let result = Example::run(b"@HeyEdgeware".to_vec());
 		// then
 		// TODO: make specific error for API key
 		assert_eq!(result, Err(http::Error::Unknown));
@@ -146,7 +146,7 @@ fn should_make_twitter_call_and_parse_result() {
 		// let alice_pubkey = sp_core::sr25519::Pair::from_seed(b"12345678901234567890123456789012").public();
 		// let bob_pubkey = sp_core::sr25519::Pair::from_seed(b"12345678901234567890123456789013").public();
     
-    let result = Example::run();
+    let result = Example::run(b"@HeyEdgeware".to_vec());
 		// then
 		assert_eq!(result, Ok(()));
 	});
@@ -165,7 +165,7 @@ fn set_twitter_response(state: &mut testing::OffchainState) {
 	headers.push((String::from("Authorization"), String::from("Bearer AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")));
 	state.expect_request(testing::PendingRequest {
 		method: "GET".into(),
-		uri: "https://api.twitter.com/2/tweets/search/recent?query=@heyedgeware&limit=10".into(),
+		uri: "https://api.twitter.com/2/tweets/search/recent?limit=10&query=@HeyEdgeware".into(),
 		response: Some(data),
 		sent: true,
 		headers: headers,

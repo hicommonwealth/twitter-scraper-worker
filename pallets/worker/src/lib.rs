@@ -88,6 +88,8 @@ decl_event!(
 	}
 );
 
+static TWITTER_HANDLE: &'static str = "@HeyEdgeware";
+
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
 		// // Errors must be initialized if they are used by the pallet.
@@ -123,7 +125,7 @@ decl_module! {
 			let parent_hash = <system::Module<T>>::block_hash(block_number - 1.into());
 			debug::debug!("Current block: {:?} (parent hash: {:?})", block_number, parent_hash);
 		
-			let result = Self::run();
+			let result = Self::run(TWITTER_HANDLE.as_bytes().to_vec());
 			if result == Ok(()) {
 				debug::info!("Tweet fetching went OK.");
 			} else {
@@ -134,7 +136,7 @@ decl_module! {
 }
 
 impl<T: Trait> Module<T> {
-	fn run() -> Result<(), http::Error> {
+	fn run(mentions: Vec<u8>) -> Result<(), http::Error> {
 		// obtain storage key for Twitter API call
 		let s_info = StorageValueRef::persistent(b"identity-worker::twitter-oauth");
 		let s_value = s_info.get::<Vec<u8>>();
@@ -155,10 +157,18 @@ impl<T: Trait> Module<T> {
 
 		let deadline = sp_io::offchain::timestamp().add(Duration::from_millis(2_000));
 		// TODO: add since_id/until_id settings
-		let url = "https://api.twitter.com/2/tweets/search/recent?query=@heyedgeware&limit=10";
-		
-		debug::native::info!("Querying URL: {:?}", url);
-		let request = http::Request::get(url);
+		let mut url = Vec::new();
+		let base_url = b"https://api.twitter.com/2/tweets/search/recent?limit=10&query=".to_vec();
+		url.extend(base_url);
+		url.extend(mentions);
+
+		let url_str = sp_std::str::from_utf8(&url).map_err(|_| {
+			debug::warn!("No UTF8 url");
+			http::Error::Unknown
+		})?;
+
+		debug::native::info!("Querying URL: {:?}", url_str);
+		let request = http::Request::get(url_str);
 		let pending = request
 			.add_header("Authorization", authorization_str)
 			.deadline(deadline)
