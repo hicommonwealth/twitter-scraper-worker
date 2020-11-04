@@ -10,13 +10,42 @@ use frame_support::{
 	debug, decl_module, decl_storage, decl_event,
 	traits::Get,
 };
-use sp_core::crypto::KeyTypeId;
 use sp_runtime::{
 	transaction_validity::{
 		ValidTransaction, TransactionValidity, TransactionSource,
 		TransactionPriority,
 	},
+	offchain::{
+		storage::StorageValueRef,
+		http, Duration
+	}
 };
+use sp_std::vec::Vec;
+use sp_io::crypto::sr25519_verify;
+use sp_core::sr25519::{Public, Signature};
+use sp_core::crypto::{KeyTypeId, UncheckedFrom};
+use lite_json::JsonValue;
+
+#[cfg(test)]
+mod tests;
+
+pub const KEY_TYPE: KeyTypeId = KeyTypeId(*b"twtr");
+pub mod crypto {
+        use super::KEY_TYPE;
+        use sp_runtime::{
+                app_crypto::{app_crypto, sr25519},
+                traits::Verify,
+        };
+        use sp_core::sr25519::Signature as Sr25519Signature;
+        app_crypto!(sr25519, KEY_TYPE);
+
+        pub struct TestAuthId;
+        impl frame_system::offchain::AppCrypto<<Sr25519Signature as Verify>::Signer, Sr25519Signature> for TestAuthId {
+                type RuntimeAppPublic = Public;
+                type GenericSignature = sp_core::sr25519::Signature;
+                type GenericPublic = sp_core::sr25519::Public;
+        }
+}
 
 /// This pallet's configuration trait
 pub trait Trait: CreateSignedTransaction<Call<Self>> {
@@ -93,7 +122,132 @@ decl_module! {
 			// We can easily import `frame_system` and retrieve a block hash of the parent block.
 			let parent_hash = <system::Module<T>>::block_hash(block_number - 1.into());
 			debug::debug!("Current block: {:?} (parent hash: {:?})", block_number, parent_hash);
+		
+			let result = Self::run();
+			if result == Ok(()) {
+				debug::info!("Tweet fetching went OK.");
+			} else {
+				debug::warn!("Tweet fetching encountered error.");
+			}
 		}
+	}
+}
+
+impl<T: Trait> Module<T> {
+	fn run() -> Result<(), http::Error> {
+		// obtain storage key for Twitter API call
+		let s_info = StorageValueRef::persistent(b"identity-worker::twitter-oauth");
+		let s_value = s_info.get::<Vec<u8>>();
+		let mut authorization = Vec::new();
+		if let Some(Some(twitter_key)) = s_value {
+			// add "Bearer" prefix to key
+			authorization.extend(b"Bearer ");
+			authorization.extend(&twitter_key);
+		} else {
+			debug::info!("No Twitter OAuth key found.");
+			return Err(http::Error::Unknown);
+		}
+
+		let authorization_str = sp_std::str::from_utf8(&authorization).map_err(|_| {
+			debug::warn!("No UTF8 url");
+			http::Error::Unknown
+		})?;
+
+		let deadline = sp_io::offchain::timestamp().add(Duration::from_millis(2_000));
+		// TODO: add since_id/until_id settings
+		let url = "https://api.twitter.com/2/tweets/search/recent?query=@heyedgeware&limit=10";
+		
+		debug::native::info!("Querying URL: {:?}", url);
+		let request = http::Request::get(url);
+		let pending = request
+			.add_header("Authorization", authorization_str)
+			.deadline(deadline)
+			.send().map_err(|_| http::Error::IoError)?;
+		
+		
+		let response = pending.try_wait(deadline).map_err(|_| {
+			debug::warn!("Request error / deadline reached");
+			http::Error::DeadlineReached
+		})??;
+		if response.code != 200 {
+			debug::warn!("Unexpected status code: {}", response.code);
+			let body = response.body().collect::<Vec<u8>>();
+			let body_str = sp_std::str::from_utf8(&body).map_err(|_| {
+				debug::warn!("No UTF8 body");
+				http::Error::Unknown
+			})?;
+			debug::warn!("Error text: {:?}", body_str);
+			return Err(http::Error::Unknown);
+		}
+
+		// Collect response body and parse/verify the signature text
+		let body = response.body().collect::<Vec<u8>>();
+		let body_str = sp_std::str::from_utf8(&body).map_err(|_| {
+			debug::warn!("No UTF8 body");
+			http::Error::Unknown
+		})?;
+		debug::info!("Got response body: {:?}", body_str);
+
+		// interpret body string as a JSON blob
+		// the base64 string should be found under "response_json.text" after the @handle
+		let response_json = lite_json::parse_json(&body_str).unwrap();
+
+		// get response.data: array of tweets
+		let data = match response_json {
+			JsonValue::Object(obj) => {
+				obj.into_iter()
+					.find(|(k, _)| k.iter().map(|c| *c as u8).collect::<Vec<u8>>() == b"data".to_vec())
+					.and_then(|v| {
+						match v.1 {
+							JsonValue::Array(arr) => Some(arr),
+							_ => None,
+						}
+					})
+			},
+			_ => None,
+		}.unwrap_or(Vec::new());
+
+		for tweet in data {
+			let text = match tweet {
+				JsonValue::Object(obj) => {
+					obj.into_iter()
+						.find(|(k, _)| k.iter().map(|c| *c as u8).collect::<Vec<u8>>() == b"text".to_vec())
+						.and_then(|v| {
+							match v.1 {
+								JsonValue::String(t) => Some(t),
+								_ => None,
+							}
+						})
+				},
+				_ => None,
+			}.unwrap().into_iter().map(|c| c as u8).collect::<Vec<u8>>();
+
+			// parse out base64 string: should be the second str if split on whitespace
+			let text_str = sp_std::str::from_utf8(&text).map_err(|_| {
+				debug::warn!("No UTF8 text");
+				http::Error::Unknown
+			})?;
+
+			// TODO: add more complex parsing logic
+			let signature = text_str.split_whitespace().nth(1).unwrap();
+			debug::native::info!("Verifying signature: {:?}", signature);
+			// interpret the entire string as a base64 encoded "signature | public key"
+			// allocate a buffer of sufficient size -- signature is 64 bytes, pubkey is 32 bytes
+			let mut buf: [u8; 96] = [0; 96];
+			base64::decode_config_slice(signature, base64::STANDARD, &mut buf).unwrap();
+
+			// verify signature matches
+			let mut pub_bytes: [u8; 32] = [0; 32];
+			pub_bytes.copy_from_slice(&buf[64..]);
+			let public: Public = Public::unchecked_from(pub_bytes);
+			let mut sig_bytes: [u8; 64] = [0; 64];
+			sig_bytes.copy_from_slice(&buf[..64]);
+			let signature = Signature::from_raw(sig_bytes);
+			let is_valid = sr25519_verify(&signature, &public, &public);
+			// TODO: handle results somehow?
+			debug::native::info!("Signature for {:?} is valid? {:?}", public, is_valid);
+		}
+		Ok(())
 	}
 }
 
