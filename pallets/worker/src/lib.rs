@@ -88,7 +88,7 @@ decl_event!(
 	}
 );
 
-static TWITTER_HANDLE: &'static str = "@HeyEdgeware";
+static TWITTER_HANDLE: &'static str = "@JakeNaviasky";
 
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
