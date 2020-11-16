@@ -18,14 +18,14 @@ codec = { package = "parity-scale-codec", version = "1.3.4", default-features = 
 serde = { version = "1.0", default-features = false, optional = true }
 serde_derive = { version = "1.0", optional = true }
 safe-mix = { version = "1.0", default-features = false }
-sp-application-crypto = { git = "https://github.com/paritytech/substrate.git", default-features = false }
-sp-std = { git = "https://github.com/paritytech/substrate.git", default-features = false }
-sp-io = { git = "https://github.com/paritytech/substrate.git", default-features = false }
-sp-core = { git = "https://github.com/paritytech/substrate.git", default-features = false }
-sp-runtime = { git = "https://github.com/paritytech/substrate.git", default-features = false }
-frame-support = { git = "https://github.com/paritytech/substrate.git", default-features = false }
-frame-system = { git = "https://github.com/paritytech/substrate.git", default-features = false }
-pallet-timestamp = { git = "https://github.com/paritytech/substrate.git", default-features = false }
+sp-application-crypto = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
+sp-std = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
+sp-io = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
+sp-core = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
+sp-runtime = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
+frame-support = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
+frame-system = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
+pallet-timestamp = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
 lite-json = { version = "0.1.3", default-features = false }
 
 [features]

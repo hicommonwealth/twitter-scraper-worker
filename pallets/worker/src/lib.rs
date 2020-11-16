@@ -158,7 +158,7 @@ impl<T: Trait> Module<T> {
 		let deadline = sp_io::offchain::timestamp().add(Duration::from_millis(2_000));
 		// TODO: add since_id/until_id settings
 		let mut url = Vec::new();
-		let base_url = b"https://api.twitter.com/2/tweets/search/recent?limit=10&query=".to_vec();
+		let base_url = b"https://api.twitter.com/2/tweets/search/recent?max_results=10&query=".to_vec();
 		url.extend(base_url);
 		url.extend(mentions);
 

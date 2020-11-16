@@ -13,44 +13,44 @@ targets = ["x86_64-unknown-linux-gnu"]
 [dependencies]
 codec = { package = "parity-scale-codec", version = "1.3.4", default-features = false, features = ["derive"] }
 
-pallet-aura = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-pallet-balances = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-frame-support = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-pallet-grandpa = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-pallet-randomness-collective-flip = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-pallet-sudo = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-frame-system = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-pallet-timestamp = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-pallet-transaction-payment = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-frame-executive = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
+pallet-aura = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+pallet-balances = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+frame-support = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+pallet-grandpa = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+pallet-randomness-collective-flip = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+pallet-sudo = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+frame-system = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+pallet-timestamp = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+pallet-transaction-payment = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+frame-executive = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
 serde = { version = "1.0.101", optional = true, features = ["derive"] }
-sp-api = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-sp-block-builder = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "2.0.0"}
-sp-consensus-aura = { version = "0.8.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-sp-core = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-sp-inherents = { git = "https://github.com/paritytech/substrate.git", default-features = false, version = "2.0.0"}
-sp-offchain = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-sp-runtime = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-sp-session = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-sp-std = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-sp-transaction-pool = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-sp-version = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
+sp-api = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+sp-block-builder = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false, version = "2.0.0"}
+sp-consensus-aura = { version = "0.8.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+sp-core = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+sp-inherents = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false, version = "2.0.0"}
+sp-offchain = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+sp-runtime = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+sp-session = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+sp-std = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+sp-transaction-pool = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+sp-version = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
 
 # Used for the node template's RPCs
-frame-system-rpc-runtime-api = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-pallet-transaction-payment-rpc-runtime-api = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
-pallet-indices = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git" }
+frame-system-rpc-runtime-api = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+pallet-transaction-payment-rpc-runtime-api = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
+pallet-indices = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
 
 # Used for runtime benchmarking
-frame-benchmarking = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", optional = true }
-frame-system-benchmarking = { version = "2.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", optional = true }
+frame-benchmarking = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", optional = true }
+frame-system-benchmarking = { version = "2.0.0", default-features = false, git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", optional = true }
 hex-literal = { version = "0.3.1", optional = true }
 
-sp-application-crypto = { git = "https://github.com/paritytech/substrate.git", default-features = false }
+sp-application-crypto = { git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug", default-features = false }
 pallet-worker = { version = "2.0.0", default-features = false, path = "../pallets/worker" }
 
 [build-dependencies]
-wasm-builder-runner = { package = "substrate-wasm-builder-runner", git = "https://github.com/paritytech/substrate.git" }
+wasm-builder-runner = { package = "substrate-wasm-builder-runner", git = "https://github.com/hicommonwealth/substrate.git", branch = "jake.offchain-debug" }
 
 [features]
 default = ["std"]

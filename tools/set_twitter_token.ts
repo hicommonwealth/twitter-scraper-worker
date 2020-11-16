@@ -25,7 +25,8 @@ async function main() {
   const api = await initApi();
   // specifically we need the "Bearer" token
   let token = process.env.TWITTER_TOKEN;
-  await api.rpc.offchain.localStorageSet('PERSISTENT', 'identity-worker::twitter-oauth', token);}
+  await api.rpc.offchain.localStorageSet('PERSISTENT', 'identity-worker::twitter-oauth', token);
+}
 
 main().then(() => {
   console.log('Main function done executing');
